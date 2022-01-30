@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <console/console.h>
 #include <string.h>
+#include <southbridge/amd/common/reset.h>
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 
@@ -265,11 +266,13 @@ static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 
 			pDCTstat->TargetFreq = final_target_freq;
 
-			if (global_phy_training_status)
+			if (global_phy_training_status) {
 				printk(BIOS_WARNING,
 					"%s: Uncorrectable invalid value(s) detected in second phase of write levelling; "
-					"continuing but system may be unstable!\n",
+					"Restarting system\n",
 					__func__);
+				soft_reset();
+			}
 
 			uint8_t dct;
 			for (dct = 0; dct < 2; dct++) {

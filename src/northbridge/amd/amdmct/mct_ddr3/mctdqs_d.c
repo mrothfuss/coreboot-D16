@@ -21,6 +21,7 @@
 #include <arch/cpu.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <southbridge/amd/common/reset.h>
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 
@@ -1460,8 +1461,8 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 				if (region_center < 16) {
 					printk(BIOS_WARNING, "TrainDQSRdWrPos: negative DQS recovery delay detected!"
-							"  Attempting to continue but your system may be unstable...\n");
-					region_center = 0;
+							"  Restarting system\n");
+					soft_reset();
 				} else {
 					region_center -= 16;
 				}

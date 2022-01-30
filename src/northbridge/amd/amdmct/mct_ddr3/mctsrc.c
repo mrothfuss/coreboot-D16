@@ -26,6 +26,7 @@
 #include <string.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
+#include <southbridge/amd/common/reset.h>
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 
@@ -1698,8 +1699,10 @@ void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 			Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000050, 0x13131313);
 		}
 		dword = Get_NB32_DCT(dev, Channel, 0x268) & 0x3ffff;
-		if (dword)
-			printk(BIOS_ERR, "WARNING: MaxRdLatency training FAILED!  Attempting to continue but your system may be unstable...\n");
+		if (dword) {
+			printk(BIOS_ERR, "WARNING: MaxRdLatency training FAILED!  Restarting system\n");
+			soft_reset();
+		}
 
 		/* 2.10.5.8.5.1.5 */
 		nb_pstate = 0;
