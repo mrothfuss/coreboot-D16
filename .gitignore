@@ -2,3 +2,6 @@ build
 3rdparty/blobs
 vgabios.bin
 .config.old
+payloads/external/SeaBIOS/seabios
+util/crossgcc/xgcc
+.xcompile
