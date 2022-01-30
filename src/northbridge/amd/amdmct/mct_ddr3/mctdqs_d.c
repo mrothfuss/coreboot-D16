@@ -1471,7 +1471,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 				/* Program the Read DQS Timing Control register with the center of the passing window */
 				current_read_dqs_delay[lane] = region_center;
-				passing_dqs_delay_found[lane] = 1;
+				passing_read_dqs_delay_found = 1;
 
 				/* Commit the current Read DQS Timing Control settings to the hardware registers */
 				write_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
