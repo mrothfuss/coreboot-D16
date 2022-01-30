@@ -14,15 +14,14 @@ UEFI. This allows for systems to only include the features necessary
 in the target application, reducing the amount of code and flash space
 required.
 
-This repository is dedicated to maintaining the ASUS KGPE-D16 motherboard, which has lost upstream support in Coreboot.
+This repository is dedicated to maintaining the ASUS KGPE-D16 motherboard, which has lost upstream support.
 
 Information is also provided to assist others in building firmware for the D16 motherboard.
-
-Current Status: testing
 
 
 Tested Build Environments
 -------------------------
+
 Debian 9 or 10 (amd64)
 
 ```bash
@@ -36,28 +35,38 @@ Building coreboot
 ```bash
 # cd coreboot-D16
 
+### build the cross compiler
 make crossgcc-i386 CPUS=$(nproc)
 
 ### if you want to change settings
 # make menuconfig
 
-### if you want microcode (enabled by default)
-# mkdir -p 3rdparty/blobs/cpu/amd/family_10h-family_14h
-# cp <downloaded ucode path>/microcode_amd.bin 3rdparty/blobs/cpu/amd/family_10h-family_14h/
-# mkdir -p 3rdparty/blobs/cpu/amd/family_15h
-# cp <downloaded ucode path>/microcode_amd_fam15h.bin 3rdparty/blobs/cpu/amd/family_15h/
+### add AMD microcode (expected by default)
+mkdir -p nonfree/amd && cd nonfree/amd
+curl -O "https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/amd64-microcode_3.20191218.1.tar.xz"
+tar xf amd64-microcode_3.20191218.1.tar.xz
+cd ../../
+mkdir -p 3rdparty/blobs/cpu/amd/family_10h-family_14h
+cp nonfree/amd/amd64-microcode-3.20191218.1/microcode_amd.bin 3rdparty/blobs/cpu/amd/family_10h-family_14h/
+mkdir -p 3rdparty/blobs/cpu/amd/family_15h
+cp nonfree/amd/amd64-microcode-3.20191218.1/microcode_amd_fam15h.bin 3rdparty/blobs/cpu/amd/family_15h/
 
-### if you want the proprietary VGA BIOS (enabled by default)
-# cp <extracted VGABIOS path>/vgabios.bin ./
+### add VGABIOS from the ASUS BIOS (expected by default)
+mkdir -p nonfree/asus && cd nonfree/asus
+curl -O "https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/BIOS/KGPE-D16-ASUS-3309.zip"
+unzip KGPE-D16-ASUS-3309.zip
+cd ../../
+dd if=./nonfree/asus/KGPE-D16-ASUS-3309.ROM of=./vgabios.bin bs=1024 skip=1856 count=32
 
+### build the coreboot rom
 make
 
-### copy built ROM to modify SeaBIOS behavior
-# cp ./build/coreboot.rom ./
-### disable execution of PCI option ROMs
-# ./build/cbfstool coreboot.rom add-int -i 0 -n etc/pci-optionrom-exec
+### copy and modify the coreboot rom
+cp ./build/coreboot.rom ./
+### disable execution of PCI option ROMs, except for VGA cards
+./build/cbfstool coreboot.rom add-int -i 1 -n etc/pci-optionrom-exec
 ### extend the default boot-splash time
-# ./build/cbfstool coreboot.rom add-int -i 10000 -n etc/boot-menu-wait
+./build/cbfstool coreboot.rom add-int -i 10000 -n etc/boot-menu-wait
 ```
 
 
@@ -84,7 +93,7 @@ PCIe: MHQJRH Dual M.2 Adapter (NVMe drive is bootable by SeaBIOS)
 Tested BLOBs
 ------------
 
-Microcode: amd64-microcode-3.20160316.3
+Microcode: amd64-microcode-3.20160316.3, amd64-microcode-3.20191218.1
 
 VGA BIOS: extracted from ASUS Firmware v3309
 
@@ -102,7 +111,7 @@ AMD SR5690 Register Programming Requirements (https://www.amd.com/system/files/T
 
 ASUS Firmware v3309 (https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/BIOS/KGPE-D16-ASUS-3309.zip)
 
-AMD64 Microcode 20160316 (https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/amd64-microcode_3.20160316.3.tar.xz)
+AMD64 Microcode (https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/)
 
 Raptor Engineering OpenBMC (https://www.raptorengineering.com/coreboot/kgpe-d16-bmc-port-status.php)
 
