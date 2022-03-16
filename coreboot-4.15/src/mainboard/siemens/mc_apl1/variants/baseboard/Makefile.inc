@@ -1,0 +1,2 @@
+
+romstage-y += memory.c

@@ -1,0 +1,200 @@
+config PARALLEL_MP
+	def_bool y
+	depends on !LEGACY_SMP_INIT
+	depends on SMP
+	select CPU_INFO_V2
+	help
+	 This option uses common MP infrastructure for bringing up APs
+	 in parallel. It additionally provides a more flexible mechanism
+	 for sequencing the steps of bringing up the APs.
+
+config PARALLEL_MP_AP_WORK
+	def_bool n
+	depends on PARALLEL_MP
+	help
+	 Allow APs to do other work after initialization instead of going
+	 to sleep.
+
+config LEGACY_SMP_INIT
+	bool
+
+choice LAPIC_ACCESS_MODE
+	prompt "APIC operation mode"
+	default XAPIC_ONLY
+
+config XAPIC_ONLY
+	prompt "Set XAPIC mode"
+	bool
+
+config X2APIC_ONLY
+	prompt "Set X2APIC mode"
+	bool
+	depends on PARALLEL_MP
+
+config X2APIC_RUNTIME
+	prompt "Support both XAPIC and X2APIC"
+	bool
+	depends on PARALLEL_MP
+
+endchoice
+
+config UDELAY_LAPIC
+	bool
+	default n
+
+config LAPIC_MONOTONIC_TIMER
+	def_bool n
+	depends on UDELAY_LAPIC
+	help
+	  Expose monotonic time using the local APIC.
+
+config UDELAY_LAPIC_FIXED_FSB
+	int
+
+config UDELAY_TSC
+	bool
+	default n
+
+config UNKNOWN_TSC_RATE
+	bool
+	default y if LAPIC_MONOTONIC_TIMER
+
+config TSC_MONOTONIC_TIMER
+	def_bool n
+	depends on UDELAY_TSC
+	help
+	  Expose monotonic time using the TSC.
+
+config TSC_SYNC_LFENCE
+	bool
+	default n
+	help
+	  The CPU driver should select this if the CPU needs
+	  to execute an lfence instruction in order to synchronize
+	  rdtsc. This is true for all modern AMD CPUs.
+
+config TSC_SYNC_MFENCE
+	bool
+	default n
+	help
+	  The CPU driver should select this if the CPU needs
+	  to execute an mfence instruction in order to synchronize
+	  rdtsc. This is true for all modern Intel CPUs.
+
+config SETUP_XIP_CACHE
+	bool
+	depends on !NO_XIP_EARLY_STAGES
+	help
+	  Select this option to set up an MTRR to cache XIP stages loaded
+	  from the bootblock. This is useful on platforms lacking a
+	  non-eviction mode and therefore need to be careful to avoid
+	  eviction.
+
+config LOGICAL_CPUS
+	bool
+	default y
+
+config HAVE_SMI_HANDLER
+	bool
+	default n
+	depends on (SMM_ASEG || SMM_TSEG)
+
+config NO_SMM
+	bool
+	default n
+
+config SMM_ASEG
+	bool
+	default n
+	depends on !NO_SMM
+
+config SMM_TSEG
+	bool
+	default y
+	depends on !(NO_SMM || SMM_ASEG)
+
+if SMM_TSEG
+
+config SMM_MODULE_HEAP_SIZE
+	hex
+	default 0x4000
+	help
+	  This option determines the size of the heap within the SMM handler
+	  modules.
+
+config SMM_MODULE_STACK_SIZE
+	hex
+	default 0x800 if ARCH_RAMSTAGE_X86_64
+	default 0x400
+	help
+	  This option determines the size of the stack within the SMM handler
+	  modules.
+
+config SMM_STUB_STACK_SIZE
+	hex
+	default 0x400
+	help
+	  This option determines the size of the stack within the SMM handler
+	  modules.
+
+endif
+
+config SMM_LAPIC_REMAP_MITIGATION
+	bool
+	default y if NORTHBRIDGE_INTEL_I945
+	default y if NORTHBRIDGE_INTEL_GM45
+	default y if NORTHBRIDGE_INTEL_IRONLAKE
+	default n
+
+config SERIALIZED_SMM_INITIALIZATION
+	bool
+	default n
+	help
+	  On some CPUs, there is a race condition in SMM.
+	  This can occur when both hyperthreads change SMM state
+	  variables in parallel without coordination.
+	  Setting this option serializes the SMM initialization
+	  to avoid an ugly hang in the boot process at the cost
+	  of a slightly longer boot time.
+
+config X86_AMD_FIXED_MTRRS
+	bool
+	default n
+	help
+	  This option informs the MTRR code to use the RdMem and WrMem fields
+	  in the fixed MTRR MSRs.
+
+config X86_AMD_INIT_SIPI
+	bool
+	default n
+	help
+	  This option limits the number of SIPI signals sent during during the
+	  common AP setup.  Intel documentation specifies an INIT SIPI SIPI
+	  sequence, however this doesn't work on some AMD platforms. These
+	  newer AMD platforms don't need the 10ms wait between INIT and SIPI,
+	  so skip that too to save some time.
+
+config SOC_SETS_MSRS
+	bool
+	default n
+	help
+	  The SoC requires different access methods for reading and writing
+	  the MSRs.  Use SoC specific routines to handle the MSR access.
+
+config RESERVE_MTRRS_FOR_OS
+	bool
+	default n
+	help
+	  This option allows a platform to reserve 2 MTRRs for the OS usage.
+	  The Intel SDM documents that the the first 6 MTRRs are intended for
+	  the system BIOS and the last 2 are to be reserved for OS usage.
+	  However, modern OSes use PAT to control cacheability instead of
+	  using MTRRs.
+
+config CPU_INFO_V2
+	bool
+	depends on PARALLEL_MP
+	help
+	  Enables the new method of locating struct cpu_info. This new method
+	  uses the %gs segment to locate the cpu_info pointer. The old method
+	  relied on the stack being CONFIG_STACK_SIZE aligned.
