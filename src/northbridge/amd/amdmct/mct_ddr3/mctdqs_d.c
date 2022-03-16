@@ -1288,6 +1288,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t cur_count = 0;
 	uint8_t best_pos = 0;
 	uint8_t best_count = 0;
+	uint16_t region_center;
 
 	uint32_t index_reg = 0x98;
 	uint32_t dev = pDCTstat->dev_dct;
@@ -1456,16 +1457,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				last_pos = 0;
 			}
 
-			if (best_count > 2) {
-				uint16_t region_center = (best_pos + (best_count / 2));
-
-				if (region_center < 16) {
-					printk(BIOS_WARNING, "TrainDQSRdWrPos: negative DQS recovery delay detected!"
-							"  Restarting system\n");
-					soft_reset();
-				} else {
-					region_center -= 16;
-				}
+			region_center = (best_pos + (best_count / 2));
+			if ((best_count > 2) && (region_center >= 16)) {
+				region_center -= 16;
 
 				/* Restore current settings of other (previously trained) lanes to the active array */
 				memcpy(current_read_dqs_delay, initial_read_dqs_delay, sizeof(current_read_dqs_delay));
