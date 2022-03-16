@@ -5,3 +5,6 @@ vgabios.bin
 payloads/external/SeaBIOS/seabios
 util/crossgcc/xgcc
 .xcompile
+*.rom
+*.sh
+testing
