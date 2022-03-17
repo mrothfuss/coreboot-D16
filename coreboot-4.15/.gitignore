@@ -1,0 +1,6 @@
+build
+util/crossgcc/xgcc
+.config.old
+*.sh
+coreboot.rom
+payloads/external/SeaBIOS/seabios

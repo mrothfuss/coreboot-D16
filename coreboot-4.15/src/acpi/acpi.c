@@ -263,13 +263,6 @@ void acpi_create_madt(acpi_madt_t *madt)
 	header->checksum = acpi_checksum((void *)madt, header->length);
 }
 
-static unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-			CONFIG_MMCONF_BASE_ADDRESS, 0, 0, CONFIG_MMCONF_BUS_NUMBER - 1);
-	return current;
-}
-
 /* MCFG is defined in the PCI Firmware Specification 3.0. */
 void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 {
@@ -291,8 +284,7 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	header->length = sizeof(acpi_mcfg_t);
 	header->revision = get_acpi_table_revision(MCFG);
 
-	if (CONFIG(MMCONF_SUPPORT))
-		current = acpi_fill_mcfg(current);
+	current = acpi_fill_mcfg(current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)mcfg;
@@ -1248,7 +1240,7 @@ unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 		printk(BIOS_INFO, "%s: Device not enabled\n", __func__);
 		return current;
 	}
-	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res) {
 		printk(BIOS_ERR, "%s: Unable to find resource for %s\n",
 		       __func__, dev_path(dev));
@@ -1945,15 +1937,15 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 2;
 	case TPM2:
 		return 4;
-	case SSDT: /* ACPI 3.0 up to 6.3: 2 */
+	case SSDT: /* ACPI 3.0 upto 6.3: 2 */
 		return 2;
-	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 up to 6.3: 3 */
+	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 upto 6.3: 3 */
 		return 1; /* TODO Should probably be upgraded to 2 */
 	case HMAT: /* ACPI 6.4: 2 */
 		return 2;
 	case DMAR:
 		return 1;
-	case SLIT: /* ACPI 2.0 up to 6.3: 1 */
+	case SLIT: /* ACPI 2.0 upto 6.3: 1 */
 		return 1;
 	case SPMI: /* IMPI 2.0 */
 		return 5;
@@ -1965,13 +1957,13 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return IVRS_FORMAT_MIXED;
 	case DBG2:
 		return 0;
-	case FACS: /* ACPI 2.0/3.0: 1, ACPI 4.0 up to 6.3: 2 */
+	case FACS: /* ACPI 2.0/3.0: 1, ACPI 4.0 upto 6.3: 2 */
 		return 1;
-	case RSDT: /* ACPI 1.0 up to 6.3: 1 */
+	case RSDT: /* ACPI 1.0 upto 6.3: 1 */
 		return 1;
-	case XSDT: /* ACPI 2.0 up to 6.3: 1 */
+	case XSDT: /* ACPI 2.0 upto 6.3: 1 */
 		return 1;
-	case RSDP: /* ACPI 2.0 up to 6.3: 2 */
+	case RSDP: /* ACPI 2.0 upto 6.3: 2 */
 		return 2;
 	case EINJ:
 		return 1;

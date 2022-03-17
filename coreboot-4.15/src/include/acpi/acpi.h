@@ -128,18 +128,6 @@ typedef struct acpi_gen_regaddr {
 #define ACPI_ACCESS_SIZE_DWORD_ACCESS	3
 #define ACPI_ACCESS_SIZE_QWORD_ACCESS	4
 
-/* Macros for common resource types */
-#define ACPI_REG_MSR(address, offset, width) \
-	(acpi_addr_t){ \
-		.space_id    = ACPI_ADDRESS_SPACE_FIXED, \
-		.access_size = ACPI_ACCESS_SIZE_QWORD_ACCESS, \
-		.addrl       = address, \
-		.bit_offset  = offset, \
-		.bit_width   = width, \
-	}
-
-#define ACPI_REG_UNSUPPORTED	(acpi_addr_t){0}
-
 /* Common ACPI HIDs */
 #define ACPI_HID_FDC "PNP0700"
 #define ACPI_HID_KEYBOARD "PNP0303"
@@ -1217,6 +1205,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start);
 /* These are implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
+unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length);
@@ -1278,7 +1267,7 @@ void acpi_create_slit(acpi_slit_t *slit,
  * proximimity domain for the memory.
  */
 int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory);
-/* Create Heterogeneous Memory Attribute Table */
+/* Create Heterogenous Memory Attribute Table */
 void acpi_create_hmat(acpi_hmat_t *hmat,
 		      unsigned long (*acpi_fill_hmat)(unsigned long current));
 

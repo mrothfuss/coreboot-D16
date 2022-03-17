@@ -28,12 +28,16 @@ static void display_mtrr_fixed_types(uint64_t msr,
 	uint32_t type;
 
 	type = msr & MTRR_DEF_TYPE_MASK;
+	if (CONFIG(X86_AMD_FIXED_MTRRS))
+		type &= 0x07;
 	base_address = starting_address;
 	next_address = base_address;
 	for (index = 0; index < 64; index += 8) {
 		next_address = starting_address + (memory_size *
 			((index >> 3) + 1));
 		next_type = (msr >> index) & MTRR_DEF_TYPE_MASK;
+		if (CONFIG(X86_AMD_FIXED_MTRRS))
+			next_type &= 0x07;
 		if (next_type != type) {
 			printk(BIOS_DEBUG, "    0x%08x - 0x%08x: %s\n",
 				base_address, next_address - 1,
@@ -160,6 +164,8 @@ static void _display_mtrrs(void)
 	int i;
 	int variable_mtrrs;
 
+	fixed_mtrrs_expose_amd_rwdram();
+
 	/* Display the fixed MTRRs */
 	display_mtrrcap();
 	display_mtrr_def_type();
@@ -176,6 +182,8 @@ static void _display_mtrrs(void)
 	display_4k_mtrr(MTRR_FIX_4K_F8000, 0xf8000, "IA32_MTRR_FIX4K_F8000");
 	address_bits = cpu_phys_address_size();
 	address_mask = (1ULL << address_bits) - 1;
+
+	fixed_mtrrs_hide_amd_rwdram();
 
 	/* Display the variable MTRRs */
 	variable_mtrrs = get_var_mtrr_count();

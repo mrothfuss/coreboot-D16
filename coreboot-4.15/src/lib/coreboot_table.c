@@ -252,7 +252,6 @@ static void add_cbmem_pointers(struct lb_header *header)
 		{CBMEM_ID_TCPA_LOG, LB_TAG_TCPA_LOG},
 		{CBMEM_ID_FMAP, LB_TAG_FMAP},
 		{CBMEM_ID_VBOOT_WORKBUF, LB_TAG_VBOOT_WORKBUF},
-		{CBMEM_ID_TYPE_C_INFO, LB_TAG_TYPE_C_INFO},
 	};
 	int i;
 
@@ -445,7 +444,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 #if CONFIG(USE_OPTION_TABLE)
 	{
 		struct cmos_option_table *option_table =
-			cbfs_map("cmos_layout.bin", NULL);
+			cbfs_ro_map("cmos_layout.bin", NULL);
 		if (option_table) {
 			struct lb_record *rec_dest = lb_new_record(head);
 			/* Copy the option config table, it's already a

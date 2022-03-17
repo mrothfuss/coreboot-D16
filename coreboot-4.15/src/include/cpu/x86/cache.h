@@ -56,5 +56,7 @@ static __always_inline void disable_cache(void)
 	wbinvd();
 }
 
+void x86_enable_cache(void);
+
 #endif /* !__ASSEMBLER__ */
 #endif /* CPU_X86_CACHE */

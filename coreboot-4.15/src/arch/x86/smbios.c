@@ -489,7 +489,6 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->manufacturer = smbios_add_string(t->eos, smbios_system_manufacturer());
 	t->product_name = smbios_add_string(t->eos, smbios_system_product_name());
 	t->serial_number = smbios_add_string(t->eos, smbios_system_serial_number());
-	t->wakeup_type = smbios_system_wakeup_type();
 	t->sku = smbios_add_string(t->eos, smbios_system_sku());
 	t->version = smbios_add_string(t->eos, smbios_system_version());
 #ifdef CONFIG_MAINBOARD_FAMILY
@@ -1032,50 +1031,6 @@ static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 	return len;
 }
 
-static int smbios_write_type20_table(unsigned long *current, int *handle, u32 addr_start,
-		u32 addr_end, int type17_handle, int type19_handle)
-{
-	struct smbios_type20 *t = smbios_carve_table(*current, SMBIOS_MEMORY_DEVICE_MAPPED_ADDRESS,
-						     sizeof(*t), *handle);
-
-	t->memory_device_handle = type17_handle;
-	t->memory_array_mapped_address_handle = type19_handle;
-	t->addr_start = addr_start;
-	t->addr_end = addr_end;
-	t->partition_row_pos = 0xff;
-	t->interleave_pos = 0xff;
-	t->interleave_depth = 0xff;
-
-	const int len = smbios_full_table_len(&t->header, t->eos);
-	*current += len;
-	*handle += 1;
-	return len;
-}
-
-static int smbios_write_type20(unsigned long *current, int *handle,
-		int type17_handle, int type19_handle)
-{
-	u32 start_addr = 0;
-	int totallen = 0;
-	int i;
-
-	struct memory_info *meminfo;
-	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
-	if (meminfo == NULL)
-		return 0;	/* can't find mem info in cbmem */
-
-	printk(BIOS_INFO, "Create SMBIOS type 20\n");
-	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
-		struct dimm_info *dimm;
-		dimm = &meminfo->dimm[i];
-		u32 end_addr = start_addr + (dimm->dimm_size << 10) - 1;
-		totallen += smbios_write_type20_table(current, handle, start_addr, end_addr,
-				type17_handle, type19_handle);
-		start_addr = end_addr + 1;
-	}
-	return totallen;
-}
-
 static int smbios_write_type32(unsigned long *current, int handle)
 {
 	struct smbios_type32 *t = smbios_carve_table(*current, SMBIOS_SYSTEM_BOOT_INFORMATION,
@@ -1177,55 +1132,30 @@ static u8 smbios_get_device_type_from_dev(struct device *dev)
 	}
 }
 
-static bool smbios_get_type41_instance_id(struct device *dev, u8 device_type, u8 *instance_id)
-{
-#if CONFIG(SMBIOS_TYPE41_PROVIDED_BY_DEVTREE)
-	*instance_id = dev->smbios_instance_id;
-	return dev->smbios_instance_id_valid;
-#else
-	static u8 type41_inst_cnt[SMBIOS_DEVICE_TYPE_COUNT + 1] = {};
-
-	if (device_type == SMBIOS_DEVICE_TYPE_OTHER ||
-	    device_type == SMBIOS_DEVICE_TYPE_UNKNOWN)
-		return false;
-
-	if (device_type > SMBIOS_DEVICE_TYPE_COUNT)
-		return false;
-
-	*instance_id = type41_inst_cnt[device_type]++;
-	return true;
-#endif
-}
-
-static const char *smbios_get_type41_refdes(struct device *dev)
-{
-#if CONFIG(SMBIOS_TYPE41_PROVIDED_BY_DEVTREE)
-	if (dev->smbios_refdes)
-		return dev->smbios_refdes;
-#endif
-	return get_pci_subclass_name(dev);
-}
-
 static int smbios_generate_type41_from_devtree(struct device *dev, int *handle,
 					       unsigned long *current)
 {
+	static u8 type41_inst_cnt[SMBIOS_DEVICE_TYPE_COUNT + 1] = {};
+
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return 0;
 	if (!dev->on_mainboard)
 		return 0;
 
-	const u8 device_type = smbios_get_device_type_from_dev(dev);
+	u8 device_type = smbios_get_device_type_from_dev(dev);
 
-	u8 instance_id;
-
-	if (!smbios_get_type41_instance_id(dev, device_type, &instance_id))
+	if (device_type == SMBIOS_DEVICE_TYPE_OTHER ||
+	    device_type == SMBIOS_DEVICE_TYPE_UNKNOWN)
 		return 0;
 
-	const char *name = smbios_get_type41_refdes(dev);
+	if (device_type > SMBIOS_DEVICE_TYPE_COUNT)
+		return 0;
+
+	const char *name = get_pci_subclass_name(dev);
 
 	return smbios_write_type41(current, handle,
 					name, // name
-					instance_id, // inst
+					type41_inst_cnt[device_type]++, // inst
 					0, // segment
 					dev->bus->secondary, //bus
 					PCI_SLOT(dev->path.pci.devfn), // device
@@ -1351,12 +1281,8 @@ unsigned long smbios_write_tables(unsigned long current)
 
 	const int type16 = handle;
 	update_max(len, max_struct_size, smbios_write_type16(&current, &handle));
-	const int type17 = handle;
 	update_max(len, max_struct_size, smbios_write_type17(&current, &handle, type16));
-	const int type19 = handle;
 	update_max(len, max_struct_size, smbios_write_type19(&current, &handle, type16));
-	update_max(len, max_struct_size,
-			smbios_write_type20(&current, &handle, type17, type19));
 	update_max(len, max_struct_size, smbios_write_type32(&current, handle++));
 
 	update_max(len, max_struct_size, smbios_walk_device_tree(all_devices,
