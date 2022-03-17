@@ -1,5 +1,4 @@
-coreboot-D16 README
-===============
+# coreboot-D16
 
 coreboot is a Free Software project aimed at replacing the proprietary BIOS
 (firmware) found in most computers.  coreboot performs a little bit of
@@ -15,24 +14,18 @@ for the D16 motherboard. The included files are configured to build a firmware
 image without any closed-source components. Example commands are provided to customize the firmware
 and include various closed-source components.
 
+## coreboot-4.11
 
-coreboot-4.11
--------------
-
-**Codebase**
-
-Largely original coreboot-4.11 source code. The mainboard specific code was mostly (entirely?) written by Timothy Pearson from Raptor Engineering. I've added a few patches to fix bugs and improve stability.
-
-**Status**
+### Status
 
 Missing Features: no fan control
 
-Consistency: the boot process never stalls (1000+ boots with no issues)
+Consistency: the boot process is reliable (1000+ boots with no hangs/issues)
 
 Stability: about 1/50 boots will be unstable and crash under very high load
 
 
-**Build Environment**
+### Build Environment
 
 Debian 9 or 10 (amd64)
 
@@ -40,9 +33,13 @@ Debian 9 or 10 (amd64)
 apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev acpica-tools libgmp-dev libmpfr-dev libmpc-dev
 ```
 
+### Codebase
 
-Building coreboot
------------------
+* [coreboot-4.11 source code](https://www.coreboot.org/downloads.html)
+* The mainboard specific code was originally developed by [Raptor Engineering](https://www.raptorengineering.com/coreboot/kgpe-d16-status.php)
+* A few patches developed here to fix bugs and improve stability
+
+## Building coreboot
 
 ```bash
 ### switch to the desired version
@@ -58,9 +55,7 @@ make crossgcc-i386 CPUS=$(nproc)
 make
 ```
 
-
-Fetching blobs
---------------
+## Fetching blobs
 
 ```bash
 # cd coreboot-D16
@@ -79,9 +74,7 @@ dd if=./KGPE-D16-ASUS-3309.ROM of=./vgabios.bin bs=1024 skip=1856 count=32
 cd ../../
 ```
 
-
-Adjusting the ROM
------------------
+## Configuring the ROM
 
 ```bash
 ### switch to the desired version
@@ -110,9 +103,7 @@ cp ./build/coreboot.rom ./
 
 ```
 
-
-Tested Hardware
----------------
+## Tested Hardware
 
 Mainboard Revisions: 1.03G, 1.04, 1.05
 
@@ -131,16 +122,14 @@ GPUs: RX 550 (PCI passthrough compatible)
 PCIe: MHQJRH Dual M.2 Adapter (NVMe drive is bootable by SeaBIOS)
 
 
-Tested BLOBs
-------------
+## Tested BLOBs
 
 Microcode: amd64-microcode-3.20160316.3, amd64-microcode-3.20191218.1
 
 VGA BIOS: extracted from ASUS Firmware v3309
 
 
-Resources
----------
+## Resources
 
 ASUS Motherboard Manual (https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/Menual_QVL/E8847_KGPE-D16.pdf)
 
@@ -161,8 +150,7 @@ Coreboot VBIOS Extraction (https://www.coreboot.org/VGA_support#How_to_retrieve_
 ASUS PIKE 2008 IT Mode (https://gist.github.com/pjobson/9ec25f7fc991f28d132ca813ab1bd541)
 
 
-Copyright and License
----------------------
+## Copyright and License
 
 The copyright on coreboot is owned by quite a large number of individual
 developers and companies. Please check the individual source files for details.
