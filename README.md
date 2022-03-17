@@ -1,4 +1,4 @@
-coreboot README
+coreboot-D16 README
 ===============
 
 coreboot is a Free Software project aimed at replacing the proprietary BIOS
@@ -6,21 +6,33 @@ coreboot is a Free Software project aimed at replacing the proprietary BIOS
 hardware initialization and then executes additional boot logic, called a
 payload.
 
-With the separation of hardware initialization and later boot logic,
-coreboot can scale from specialized applications that run directly
-firmware, run operating systems in flash, load custom
-bootloaders, or implement firmware standards, like PC BIOS services or
-UEFI. This allows for systems to only include the features necessary
-in the target application, reducing the amount of code and flash space
-required.
+This repository is dedicated to maintaining/building coreboot for the
+ASUS KGPE-D16 motherboard, which has lost upstream support in coreboot
+... and was never very stable to begin with (ie: boot stalls, runtime crashes, memory issues).
 
-This repository is dedicated to maintaining the ASUS KGPE-D16 motherboard, which has lost upstream support.
-
-Information is also provided to assist others in building firmware for the D16 motherboard.
+Information is also provided to assist others in building reliable firmware
+for the D16 motherboard. The included files are configured to build a firmware
+image without any closed-source components. Example commands are provided to customize the firmware
+and include various closed-source components.
 
 
-Tested Build Environments
--------------------------
+coreboot-4.11
+-------------
+
+**Codebase**
+
+Largely original coreboot-4.11 source code. The mainboard specific code was mostly (entirely?) written by Timothy Pearson from Raptor Engineering. I've added a few patches to fix bugs and improve stability.
+
+**Status**
+
+Missing Features: no fan control
+
+Consistency: the boot process never stalls (1000+ boots with no issues)
+
+Stability: about 1/50 boots will be unstable and crash under very high load
+
+
+**Build Environment**
 
 Debian 9 or 10 (amd64)
 
@@ -33,40 +45,69 @@ Building coreboot
 -----------------
 
 ```bash
-# cd coreboot-D16
+### switch to the desired version
+# cd coreboot-D16/coreboot-4.11
 
 ### build the cross compiler
 make crossgcc-i386 CPUS=$(nproc)
 
-### if you want to change settings
+### configure the firmware (optional)
 # make menuconfig
-
-### add AMD microcode (expected by default)
-mkdir -p nonfree/amd && cd nonfree/amd
-curl -O "https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/amd64-microcode_3.20191218.1.tar.xz"
-tar xf amd64-microcode_3.20191218.1.tar.xz
-cd ../../
-mkdir -p 3rdparty/blobs/cpu/amd/family_10h-family_14h
-cp nonfree/amd/amd64-microcode-3.20191218.1/microcode_amd.bin 3rdparty/blobs/cpu/amd/family_10h-family_14h/
-mkdir -p 3rdparty/blobs/cpu/amd/family_15h
-cp nonfree/amd/amd64-microcode-3.20191218.1/microcode_amd_fam15h.bin 3rdparty/blobs/cpu/amd/family_15h/
-
-### add VGABIOS from the ASUS BIOS (expected by default)
-mkdir -p nonfree/asus && cd nonfree/asus
-curl -O "https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/BIOS/KGPE-D16-ASUS-3309.zip"
-unzip KGPE-D16-ASUS-3309.zip
-cd ../../
-dd if=./nonfree/asus/KGPE-D16-ASUS-3309.ROM of=./vgabios.bin bs=1024 skip=1856 count=32
 
 ### build the coreboot rom
 make
+```
 
-### copy and modify the coreboot rom
+
+Fetching blobs
+--------------
+
+```bash
+# cd coreboot-D16
+
+### CPU Microcode
+mkdir -p blobs/amd && cd blobs/amd
+curl -O "https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/amd64-microcode_3.20191218.1.tar.xz"
+tar xf amd64-microcode_3.20191218.1.tar.xz
+cd ../../
+
+### ASUS VGABIOS
+mkdir -p blobs/asus && cd blobs/asus
+curl -O "https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/BIOS/KGPE-D16-ASUS-3309.zip"
+unzip KGPE-D16-ASUS-3309.zip
+dd if=./KGPE-D16-ASUS-3309.ROM of=./vgabios.bin bs=1024 skip=1856 count=32
+cd ../../
+```
+
+
+Adjusting the ROM
+-----------------
+
+```bash
+### switch to the desired version
+# cd coreboot-D16/coreboot-4.11
+
+# copy the base firmware image for modification
 cp ./build/coreboot.rom ./
-### disable execution of PCI option ROMs, except for VGA cards
+
+# set SeaBIOS option ROM settings
+# 0 = no roms, 1 = VGA only, 2 = all roms (default)
 ./build/cbfstool coreboot.rom add-int -i 1 -n etc/pci-optionrom-exec
-### extend the default boot-splash time
+
+# set SeaBIOS boot menu wait time (ms)
 ./build/cbfstool coreboot.rom add-int -i 10000 -n etc/boot-menu-wait
+
+# add AMD microcode
+./build/cbfstool coreboot.rom add -n microcode_amd.bin -f ../blobs/amd/amd64-microcode-3.20191218.1/microcode_amd.bin -t microcode
+./build/cbfstool coreboot.rom add -n microcode_amd_fam15h.bin -f ../blobs/amd/amd64-microcode-3.20191218.1/microcode_amd_fam15h.bin -t microcode
+
+# replace SeaVGABIOS with ASUS VGABIOS
+./build/cbfstool coreboot.rom remove -n vgaroms/seavgabios.bin
+./build/cbfstool coreboot.rom add -n pci1a03,2000.rom -f ../blobs/asus/vgabios.bin -t optionrom
+
+# add coreboot bootsplash (requires ASUS VGABIOS)
+./build/cbfstool coreboot.rom add -n bootsplash.jpg -f ../blobs/coreboot/bootsplash_fs.jpg -t bootsplash
+
 ```
 
 
