@@ -24,7 +24,6 @@ Consistency: the boot process is reliable (1000+ boots with no hangs/issues)
 
 Stability: about 1/50 boots will be unstable and crash under very high load
 
-
 ### Build Environment
 
 Debian 9 or 10 (amd64)
@@ -35,9 +34,33 @@ apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 z
 
 ### Codebase
 
-* [coreboot-4.11 source code](https://www.coreboot.org/downloads.html)
-* The mainboard specific code was originally developed by [Raptor Engineering](https://www.raptorengineering.com/coreboot/kgpe-d16-status.php)
-* A few patches developed here to fix bugs and improve stability
+* [coreboot-4.11 source code](https://www.coreboot.org/downloads.html).
+* The mainboard specific code was originally developed by [Raptor Engineering](https://www.raptorengineering.com/coreboot/kgpe-d16-status.php).
+* A few patches were developed here to fix bugs and improve stability.
+
+## coreboot-4.15
+
+### Status
+
+Missing Features: integrated/dedicated GPU support
+
+Consistency: the boot process is reliable (160+ boots with no hangs/issues)
+
+Stability: runtime performance is reliable (160+ boots with no errors)
+
+### Build Environment
+
+Debian 11 (amd64)
+
+```bash
+apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev
+```
+
+### Codebase
+
+* [coreboot-4.15 source code](https://www.coreboot.org/downloads.html).
+* The mainboard specific code is in development by [Dasharo / 3mdeb](https://docs.dasharo.com/variants/asus_kgpe_d16/releases/), which includes both new code and reworked code previously developed by [Raptor Engineering](https://www.raptorengineering.com/coreboot/kgpe-d16-status.php).
+* A few patches were developed here to fix bugs and improve stability. All patches developed here are sent upstream to Dasharo.
 
 ## Building coreboot
 
