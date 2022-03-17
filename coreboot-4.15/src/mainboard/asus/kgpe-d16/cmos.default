@@ -1,4 +1,4 @@
-debug_level=Spew
+debug_level=Debug
 multi_core=Enable
 slow_cpu=off
 compute_unit_siblings=Enable
@@ -26,7 +26,7 @@ ieee1394_controller=Enable
 gart=Enable
 ehci_async_data_cache=Enable
 experimental_memory_speed_boost=Disable
-power_on_after_fail=On
+power_on_after_fail=Last
 boot_option=Fallback
 w83795_fan_mode=ThermalCruise
 ide_compat_mode=Disable
