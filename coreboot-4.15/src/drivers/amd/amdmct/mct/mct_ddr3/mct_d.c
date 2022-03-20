@@ -3988,21 +3988,21 @@ void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 			dword = Get_NB32(dev, 0x110);
 			if (CONFIG(CONSOLE_SERIAL)) {
 				/* Indicate the process is in progress only on serial. Delay prevents printing many dots */
-				mdelay(10);
 				printk(BIOS_DEBUG, ".");
+				mdelay(50);
 			}
 		} while (dword & (1 << MemClrBusy));
 
-		printk(BIOS_DEBUG, "\n");
+		printk(BIOS_DEBUG, " ");
 		do {
 			dword = Get_NB32(dev, 0x110);
 			if (CONFIG(CONSOLE_SERIAL)) {
 				/* Indicate the process is in progress only on serial. Delay prevents printing many dots */
-				mdelay(5);
 				printk(BIOS_DEBUG, ".");
+				mdelay(5);
 			}
 		} while (!(dword & (1 << Dr_MemClrStatus)));
-		printk(BIOS_DEBUG, "\n");
+		printk(BIOS_DEBUG, " done\n");
 	}
 
 	/* Enable prefetchers */
