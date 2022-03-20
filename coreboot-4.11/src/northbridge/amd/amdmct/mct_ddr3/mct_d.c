@@ -42,6 +42,7 @@
 #include <cpu/x86/mtrr.h>
 #include <device/pci_ops.h>
 #include <arch/acpi.h>
+#include <delay.h>
 #include <string.h>
 #include <types.h>
 #include <device/dram/ddr3.h>
@@ -4003,19 +4004,20 @@ void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 
 	/* Ensure that a memory clear operation has completed on one node */
 	if (pDCTstat->DCTSysLimit) {
-		printk(BIOS_DEBUG, "%s: Waiting for memory clear to complete", __func__);
+		printk(BIOS_DEBUG, "%s: Waiting for memory clear to complete\n", __func__);
 		do {
 			dword = Get_NB32(dev, 0x110);
-
 			printk(BIOS_DEBUG, ".");
+			mdelay(50);
 		} while (dword & (1 << MemClrBusy));
 
-		printk(BIOS_DEBUG, "\n");
+		printk(BIOS_DEBUG, " ");
 		do {
-			printk(BIOS_DEBUG, ".");
 			dword = Get_NB32(dev, 0x110);
+			printk(BIOS_DEBUG, ".");
+			mdelay(5);
 		} while (!(dword & (1 << Dr_MemClrStatus)));
-		printk(BIOS_DEBUG, "\n");
+		printk(BIOS_DEBUG, " done\n");
 	}
 
 	/* Enable prefetchers */
