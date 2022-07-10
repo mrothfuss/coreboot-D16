@@ -42,7 +42,7 @@ apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 z
 
 ### Status
 
-Missing Features: integrated/dedicated GPU support
+Missing Features: bootsplash support with dedicated graphics
 
 Consistency: the boot process is reliable (160+ boots with no hangs/issues)
 
