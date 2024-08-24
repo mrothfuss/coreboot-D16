@@ -154,7 +154,7 @@ VGA BIOS: extracted from ASUS Firmware v3309
 
 ## Resources
 
-ASUS Motherboard Manual (https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/Menual_QVL/E8847_KGPE-D16.pdf)
+ASUS Motherboard Manual ([https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/Menual_QVL/E8847_KGPE-D16.pdf](https://web.archive.org/web/20230308020132/https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/Menual_QVL/E8847_KGPE-D16.pdf))
 
 AMD Fam15h BIOS and Kernel Developers Guide (https://www.amd.com/system/files/TechDocs/42301_15h_Mod_00h-0Fh_BKDG.pdf)
 
