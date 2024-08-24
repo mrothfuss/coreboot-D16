@@ -1,7 +1,7 @@
 # coreboot-D16
 
 coreboot is a Free Software project aimed at replacing the proprietary BIOS
-(firmware) found in most computers.  coreboot performs a little bit of
+(firmware) found in most computers. coreboot performs a little bit of
 hardware initialization and then executes additional boot logic, called a
 payload.
 
@@ -12,17 +12,27 @@ ASUS KGPE-D16 motherboard, which has lost upstream support in coreboot
 Information is also provided to assist others in building reliable firmware
 for the D16 motherboard. The included files are configured to build a firmware
 image without any closed-source components. Example commands are provided to customize the firmware
-and include various closed-source components.
+and include various closed-source components. The coreboot-4.11 version is recommended, fan control
+in the tested coreboot-4.15 version is unreliable and may lead to harmful CPU temperatures.
+
+Development of coreboot 4.11 and 4.15 by [mrothfuss](https://github.com/mrothfuss) has ceased. Work
+on coreboot for AMD Fam15h has moved to [coreboot-fam15](https://github.com/mrothfuss/coreboot-fam15),
+but currently does not support the ASUS motherboards. Initial configs for ASUS KGPE-D16 and KCMA-D8
+have been created and are bootable with debugging output, but should only be considered by programmers
+interested in working on firmware for these boards. This separate codebase uses source code provided by
+AMD (AGESA) and performs better than the code developed by Raptor Engineering or Dasharo.
 
 ## coreboot-4.11
 
 ### Status
 
-Missing Features: no fan control
+Missing Features: no fan control (can be provided by OpenBMC/fand or linux/fancontrol)
 
 Consistency: the boot process is reliable (1000+ boots with no hangs/issues)
 
-Stability: about 1/50 boots will be unstable and crash under very high load
+Stability: can crash under very high load
+
+Issues: stability
 
 ### Build Environment
 
@@ -46,7 +56,9 @@ Missing Features: bootsplash support with dedicated graphics
 
 Consistency: the boot process is reliable (160+ boots with no hangs/issues)
 
-Stability: runtime performance is reliable (160+ boots with no errors)
+Stability: can crash under very high load
+
+Issues: stability, native fancontrol can fail to adapt to higher temperatures, GPU support is incomplete
 
 ### Build Environment
 
@@ -60,7 +72,7 @@ apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 z
 
 * [coreboot-4.15 source code](https://www.coreboot.org/downloads.html).
 * The mainboard specific code is in development by [Dasharo / 3mdeb](https://docs.dasharo.com/variants/asus_kgpe_d16/releases/), which includes both new code and reworked code previously developed by [Raptor Engineering](https://www.raptorengineering.com/coreboot/kgpe-d16-status.php).
-* A few patches were developed here to fix bugs and improve stability. All patches developed here are sent upstream to Dasharo.
+* A few patches were developed here to fix bugs and improve stability. All patches developed here have been merged into Dasharo's upstream codebase.
 
 ## Building coreboot
 
