@@ -156,21 +156,21 @@ VGA BIOS: extracted from ASUS Firmware v3309
 
 ASUS Motherboard Manual ([https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/Menual_QVL/E8847_KGPE-D16.pdf](https://web.archive.org/web/20230308020132/https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/Menual_QVL/E8847_KGPE-D16.pdf))
 
-AMD Fam15h BIOS and Kernel Developers Guide (https://www.amd.com/system/files/TechDocs/42301_15h_Mod_00h-0Fh_BKDG.pdf)
+AMD Fam15h BIOS and Kernel Developers Guide ([https://www.amd.com/system/files/TechDocs/42301_15h_Mod_00h-0Fh_BKDG.pdf](https://web.archive.org/web/20230608200403/https://www.amd.com/system/files/TechDocs/42301_15h_Mod_00h-0Fh_BKDG.pdf))
 
-AMD SR5690 BIOS Developers Guide (https://www.amd.com/system/files/TechDocs/43870.pdf)
+AMD SR5690 BIOS Developers Guide ([https://www.amd.com/system/files/TechDocs/43870.pdf](https://web.archive.org/web/20190315070420/https://www.amd.com/system/files/TechDocs/43870.pdf))
 
-AMD SR5690 Register Programming Requirements (https://www.amd.com/system/files/TechDocs/43872.pdf)
+AMD SR5690 Register Programming Requirements ([https://www.amd.com/system/files/TechDocs/43872.pdf](https://web.archive.org/web/20190315070344/https://www.amd.com/system/files/TechDocs/43872.pdf))
 
-ASUS Firmware v3309 (https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/BIOS/KGPE-D16-ASUS-3309.zip)
+ASUS Firmware v3309 ([https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/BIOS/KGPE-D16-ASUS-3309.zip](https://web.archive.org/web/20220121081707/https://dlcdnets.asus.com/pub/ASUS/mb/SocketG34(1944)/KGPE-D16/BIOS/KGPE-D16-ASUS-3309.zip))
 
-AMD64 Microcode (https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/)
+AMD64 Microcode ([https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/](https://web.archive.org/web/20240226213818/https://httpredir.debian.org/debian/pool/non-free/a/amd64-microcode/))
 
-Raptor Engineering OpenBMC (https://www.raptorengineering.com/coreboot/kgpe-d16-bmc-port-status.php)
+Raptor Engineering OpenBMC ([https://www.raptorengineering.com/coreboot/kgpe-d16-bmc-port-status.php](https://web.archive.org/web/20240719091525/https://www.raptorengineering.com/coreboot/kgpe-d16-bmc-port-status.php))
 
-Coreboot VBIOS Extraction (https://www.coreboot.org/VGA_support#How_to_retrieve_a_good_video_bios)
+Coreboot VBIOS Extraction ([https://www.coreboot.org/VGA_support#How_to_retrieve_a_good_video_bios](https://web.archive.org/web/20240525223111/https://www.coreboot.org/VGA_support#How_to_retrieve_a_good_video_bios))
 
-ASUS PIKE 2008 IT Mode (https://gist.github.com/pjobson/9ec25f7fc991f28d132ca813ab1bd541)
+ASUS PIKE 2008 IT Mode ([https://gist.github.com/pjobson/9ec25f7fc991f28d132ca813ab1bd541](https://web.archive.org/web/20230804190537/https://gist.github.com/pjobson/9ec25f7fc991f28d132ca813ab1bd541))
 
 
 ## Copyright and License
