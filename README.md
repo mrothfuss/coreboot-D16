@@ -1,3 +1,6 @@
+# This project has moved
+Development of coreboot for the KGPE-D16 and related 15h motherboards has moved to [15h.org](https://15h.org). The associated git repository can be found [here](https://git.15h.org/mrothfuss/coreboot-15h).
+
 # coreboot-D16
 
 coreboot is a Free Software project aimed at replacing the proprietary BIOS
